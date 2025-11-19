@@ -1,0 +1,43 @@
+{
+  "name": "jl_ota",
+  "version": "0.0.1",
+  "summary": "A Flutter plugin for Jielong OTA (Over-The-Air) updates.",
+  "description": "This plugin provides the functionality to perform OTA firmware updates on Jielong devices from within a Flutter application.",
+  "homepage": "http://yourcompany.com",
+  "license": {
+    "type": "MIT",
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Your Company": "your-email@yourcompany.com"
+  },
+  "source": {
+    "git": "https://github.com/your_username/your_repo.git",
+    "tag": "0.0.1"
+  },
+  "source_files": "Classes/**/*",
+  "dependencies": {
+    "Flutter": []
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES",
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "i386"
+  },
+  "swift_versions": "5.0",
+  "resource_bundles": {
+    "JlOta": [
+      "Resources/**/*"
+    ],
+    "jl_ota_privacy": [
+      "Resources/PrivacyInfo.xcprivacy"
+    ]
+  },
+  "vendored_frameworks": [
+    "Frameworks/*.framework"
+  ],
+  "public_header_files": [],
+  "swift_version": "5.0"
+}

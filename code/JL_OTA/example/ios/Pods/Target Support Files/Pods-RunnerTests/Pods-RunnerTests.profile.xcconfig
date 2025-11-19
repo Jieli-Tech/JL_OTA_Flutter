@@ -1,0 +1,13 @@
+CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/camera_avfoundation" "${PODS_CONFIGURATION_BUILD_DIR}/device_info_plus" "${PODS_CONFIGURATION_BUILD_DIR}/image_picker_ios" "${PODS_CONFIGURATION_BUILD_DIR}/integration_test" "${PODS_CONFIGURATION_BUILD_DIR}/jl_ota" "${PODS_CONFIGURATION_BUILD_DIR}/mobile_scanner" "${PODS_CONFIGURATION_BUILD_DIR}/permission_handler_apple" "${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences_foundation" "${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter_wkwebview" "${PODS_ROOT}/../.symlinks/plugins/jl_ota/ios/Frameworks"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/camera_avfoundation/camera_avfoundation.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/device_info_plus/device_info_plus.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/image_picker_ios/image_picker_ios.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/integration_test/integration_test.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/jl_ota/jl_ota.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/mobile_scanner/mobile_scanner.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/permission_handler_apple/permission_handler_apple.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences_foundation/shared_preferences_foundation.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/webview_flutter_wkwebview/webview_flutter_wkwebview.framework/Headers"
+LD_RUNPATH_SEARCH_PATHS = $(inherited) /usr/lib/swift
+LIBRARY_SEARCH_PATHS = $(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift
+OTHER_LDFLAGS = $(inherited) -framework "UIKit" -framework "camera_avfoundation" -framework "device_info_plus" -framework "image_picker_ios" -framework "integration_test" -framework "jl_ota" -framework "mobile_scanner" -framework "shared_preferences_foundation" -framework "webview_flutter_wkwebview"
+PODS_BUILD_DIR = ${BUILD_DIR}
+PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
+PODS_ROOT = ${SRCROOT}/Pods
+PODS_XCFRAMEWORKS_BUILD_DIR = $(PODS_CONFIGURATION_BUILD_DIR)/XCFrameworkIntermediates
+USE_RECURSIVE_SCRIPT_INPUTS_IN_SCRIPT_PHASES = YES

@@ -1,0 +1,6 @@
+framework module jl_ota {
+  umbrella header "jl_ota-umbrella.h"
+
+  export *
+  module * { export * }
+}
