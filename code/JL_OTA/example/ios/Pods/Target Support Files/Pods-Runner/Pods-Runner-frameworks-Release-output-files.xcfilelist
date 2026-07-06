@@ -2,6 +2,11 @@ ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/camera_avfoundation.framework
 ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/device_info_plus.framework
 ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_picker_ios.framework
 ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/integration_test.framework
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JLLogHelper.framework
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JL_AdvParse.framework
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JL_BLEKit.framework
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JL_HashPair.framework
+${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JL_OTALib.framework
 ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/jl_ota.framework
 ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mobile_scanner.framework
 ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/shared_preferences_foundation.framework

@@ -64,8 +64,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -73,8 +72,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -86,20 +84,19 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('ja'),
     Locale('ko'),
-    Locale('zh'),
+    Locale('zh')
   ];
 
   /// App name
@@ -287,6 +284,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SPP'**
   String get communicationWaySpp;
+
+  /// Communication way is gatt option
+  ///
+  /// In en, this message translates to:
+  /// **'GATT Over BR/EDR'**
+  String get communicationWayGatt;
 
   /// Adjust the MTU size
   ///
@@ -665,10 +668,69 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Device must be forced to upgrade'**
   String get deviceMustMandatoryUpgrade;
+
+  /// Label for bluetooth disconnected
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth disconnected'**
+  String get bluetoothDisconnected;
+
+  /// Label for gatt uuid placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter one or more UUIDs, separated by commas or newlines'**
+  String get gattUuidPlaceholder;
+
+  /// Label for gatt service uuid
+  ///
+  /// In en, this message translates to:
+  /// **'GATT Service UUID'**
+  String get gattServiceUuid;
+
+  /// Label for gatt uuid tips
+  ///
+  /// In en, this message translates to:
+  /// **'Example: 180A, 0000180D-0000-1000-8000-00805F9B34FB'**
+  String get gattUuidTips;
+
+  /// Label for gatt uuid error empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least one UUID'**
+  String get gattUuidErrorEmpty;
+
+  /// Label for gatt uuid error empty
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid UUID format:\n%s'**
+  String get gattUuidErrorInvalidFmt;
+
+  /// Label for custom command
+  ///
+  /// In en, this message translates to:
+  /// **'Custom command'**
+  String get customCommand;
+
+  /// Label for send custom command
+  ///
+  /// In en, this message translates to:
+  /// **'Send custom command'**
+  String get sendCustomCmd;
+
+  /// Label for received data
+  ///
+  /// In en, this message translates to:
+  /// **'Received data'**
+  String get receivedData;
+
+  /// Label for input data
+  ///
+  /// In en, this message translates to:
+  /// **'Input data'**
+  String get inputData;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -677,30 +739,27 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'ja', 'ko', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'ja', 'ko', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'ja':
-      return AppLocalizationsJa();
-    case 'ko':
-      return AppLocalizationsKo();
-    case 'zh':
-      return AppLocalizationsZh();
+    case 'en': return AppLocalizationsEn();
+    case 'ja': return AppLocalizationsJa();
+    case 'ko': return AppLocalizationsKo();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

@@ -6,8 +6,9 @@ import '../extensions/hex_color.dart';
 class SettingNavigationRow extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final bool showArrow;
+  final Color? titleColor;
 
   const SettingNavigationRow({
     super.key,
@@ -15,6 +16,7 @@ class SettingNavigationRow extends StatelessWidget {
     this.subtitle,
     required this.onTap,
     this.showArrow = true,
+    this.titleColor,
   });
 
   @override
@@ -30,9 +32,9 @@ class SettingNavigationRow extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
-                color: Color(0xFF242424),
+                color: titleColor ?? const Color(0xFF242424),
                 fontWeight: FontWeight.bold,
               ),
             ),

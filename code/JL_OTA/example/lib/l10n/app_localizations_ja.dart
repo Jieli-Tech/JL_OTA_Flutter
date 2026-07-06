@@ -47,8 +47,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseSetFilter => 'フィルターを設定してください';
 
   @override
-  String get copyRight =>
-      '©2021–2025 Zhuhai Jieli Technology co., LTD すべての権利を保有します';
+  String get copyRight => '©2021–2025 Zhuhai Jieli Technology co., LTD すべての権利を保有します';
 
   @override
   String get companyName => '珠海ジェリーテクノロジー株式会社';
@@ -57,8 +56,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyPolicyDialogTitle => '利用規約とプライバシーポリシー';
 
   @override
-  String get welcomeMessage =>
-      '　ジェリーOTAアップデートへようこそ！\n　私たちはあなたのプライバシーと個人情報保護を非常に重視しています。\"ジェリーOTAアップデート\"サービスをご利用になる前に、必ずお読みください';
+  String get welcomeMessage => '　ジェリーOTAアップデートへようこそ！\n　私たちはあなたのプライバシーと個人情報保護を非常に重視しています。\"ジェリーOTAアップデート\"サービスをご利用になる前に、必ずお読みください';
 
   @override
   String get userAgreement => '《利用規約》';
@@ -70,8 +68,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyPolicy => '《プライバシーポリシー》';
 
   @override
-  String get agreementText =>
-      'を理解し、同意してください。\n　本通知および関連する規約内容に同意される場合は、「同意する」をクリックしてサービスをご利用ください。';
+  String get agreementText => 'を理解し、同意してください。\n　本通知および関連する規約内容に同意される場合は、「同意する」をクリックしてサービスをご利用ください。';
 
   @override
   String get agreeButton => '同意する';
@@ -105,6 +102,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get communicationWaySpp => 'SPP';
+
+  @override
+  String get communicationWayGatt => 'GATT Over BR/EDR';
 
   @override
   String get adjustMtu => 'MTUを調整';
@@ -185,8 +185,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get serviceStarted => 'サービスが開始されました';
 
   @override
-  String get ensureConnection =>
-      '接続デバイスが同じWi-Fiに接続されているか、このデバイスのホットスポットに接続されていることを確認してください';
+  String get ensureConnection => '接続デバイスが同じWi-Fiに接続されているか、このデバイスのホットスポットに接続されていることを確認してください';
 
   @override
   String get copySuccess => 'コピー成功、接続デバイスのブラウザで開いてください';
@@ -252,19 +251,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get failPhotosSystemReason => 'システムの理由により、アルバムにアクセスできません';
 
   @override
-  String get accessCameraReason =>
-      'リソースをダウンロードするためのQRコードをスキャンするには、カメラへのアクセスが必要です';
+  String get accessCameraReason => 'リソースをダウンロードするためのQRコードをスキャンするには、カメラへのアクセスが必要です';
 
   @override
-  String get accessPhotosReason =>
-      'リソースをダウンロードするためのQRコードをスキャンするには、アルバムへのアクセスが必要です';
+  String get accessPhotosReason => 'リソースをダウンロードするためのQRコードをスキャンするには、アルバムへのアクセスが必要です';
 
   @override
   String get systemSetCamera => 'この機能にはカメラの使用が必要です。システム設定で権限を付与してください';
 
   @override
-  String get systemSetExternalStorage =>
-      'この機能には電話のストレージの使用が必要です。システム設定で権限を付与してください';
+  String get systemSetExternalStorage => 'この機能には電話のストレージの使用が必要です。システム設定で権限を付与してください';
 
   @override
   String get downloadSavePending => 'ファイルを保存中。しばらくお待ちください…';
@@ -294,9 +290,38 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shareUfwFile => 'ufwファイルを共有';
 
   @override
-  String get shareUfwFileTips =>
-      'サードパーティ製アプリ（WeChat/DingTalk）から「他のアプリで開く」＞ ufwファイルを開き、現在のOTAアップグレードに共有します';
+  String get shareUfwFileTips => 'サードパーティ製アプリ（WeChat/DingTalk）から「他のアプリで開く」＞ ufwファイルを開き、現在のOTAアップグレードに共有します';
 
   @override
   String get deviceMustMandatoryUpgrade => 'デバイスは強制アップデートが必要です';
+
+  @override
+  String get bluetoothDisconnected => 'Bluetoothが切断されました';
+
+  @override
+  String get gattUuidPlaceholder => 'UUIDを1つ以上入力してください。コンマまたは改行で区切ってください';
+
+  @override
+  String get gattServiceUuid => 'GATTサービスUUID';
+
+  @override
+  String get gattUuidTips => '例：180A, 0000180D-0000-1000-8000-00805F9B34FB';
+
+  @override
+  String get gattUuidErrorEmpty => '少なくとも1つのUUIDを入力してください';
+
+  @override
+  String get gattUuidErrorInvalidFmt => '無効なUUID形式:\n%s';
+
+  @override
+  String get customCommand => 'カスタムコマンド';
+
+  @override
+  String get sendCustomCmd => 'カスタムコマンドを送信する';
+
+  @override
+  String get receivedData => '受信データ';
+
+  @override
+  String get inputData => '入力されたデータ';
 }

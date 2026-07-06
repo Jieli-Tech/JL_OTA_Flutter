@@ -21,20 +21,25 @@ private enum OtaConstants {
     private var eventSink: FlutterEventSink?
     private(set) var itemArray: [String] = []
     private var ipAddress: String?
-
+    private var isCleanedUp = false
+    
     // MARK: - Initialization
     override init() {
         super.init()
         JLBleHandler.share().delegate = self
     }
+    
+    deinit {
+        cleanUp()
+    }
 
     // MARK: - Public Methods
-        /// 设置事件通道的 sink
+    /// Set the event channel sink
     @objc func setEventSink(sink: FlutterEventSink?) {
         eventSink = sink
     }
     
-    /// 删除OTA文件索引
+    /// Delete OTA file by index
     func deleteOtaFileIndex(call: FlutterMethodCall, result: FlutterResult) {
         guard let args = call.arguments as? [String: Any],
               let pos = args[MethodChannelConstants.ARG_POS] as? Int else {
@@ -51,7 +56,7 @@ private enum OtaConstants {
         result(nil)
     }
     
-    /// 扫描更新文件
+    /// Scan for OTA update files in the documents directory
     @discardableResult
     @objc func scanForUpdateFiles() -> [String] {
         let fileManager = FileManager.default
@@ -78,12 +83,12 @@ private enum OtaConstants {
         self.ipAddress = ipAddress
     }
 
-    /// 获取WiFi IP地址
+    /// Get the WiFi IP address
     func getWifiIpAddress(result: @escaping FlutterResult) {
         result(self.ipAddress)
     }
     
-    /// 开始OTA更新
+    /// Start the OTA update process with the specified file
     func startOTA(call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let path = call.arguments as? [String: Any],
               let filePath = path[MethodChannelConstants.ARG_PATH] as? String else {
@@ -95,7 +100,7 @@ private enum OtaConstants {
         result(true)
     }
     
-    /// 下载文件
+    /// Download a file from the specified HTTP URL
     func downloadFile(call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: Any],
               let httpUrl = args[MethodChannelConstants.ARG_HTTP_URL] as? String else {
@@ -108,14 +113,42 @@ private enum OtaConstants {
         result(nil)
     }
     
+    @objc func cleanUp() {
+        guard !isCleanedUp else {
+            return
+        }
+        
+        isCleanedUp = true
+        
+        // Clear event sink to prevent further callbacks
+        eventSink = nil
+        
+        // Clear file array
+        itemArray.removeAll()
+        
+        // Clear IP address
+        ipAddress = nil
+        
+        // Reset screen keep-on setting
+        setKeepScreenOn(false)
+        
+        // Remove delegate reference to prevent callbacks
+        if JLBleHandler.share().delegate === self {
+            JLBleHandler.share().delegate = nil
+        }
+    }
+    
     // MARK: - OTA Callback
     func otaProgressOtaResult(_ result: JL_OTAResult, withProgress progress: Float) {
+        // Don't send events if cleaned up
+        guard !isCleanedUp else { return }
+        
         let eventData = handleOtaResult(result, progress: progress)
         sendEvent(type: EventChannelConstants.TYPE_OTA_STATE, data: eventData)
     }
     
     // MARK: - Private Methods
-    /// 删除OTA文件
+    /// Delete OTA file at the specified index
     private func deleteOtaFile(at pos: Int) {
         let filePath = itemArray[pos]
         let fileManager = FileManager.default
@@ -133,9 +166,13 @@ private enum OtaConstants {
         sendFileListToFlutter()
     }
     
-    /// 发送事件到Flutter
+    /// Send an event to the Flutter side
     private func sendEvent(type: String, data: [String: Any]) {
-        DispatchQueue.main.async {
+        // Don't send events if cleaned up
+        guard !isCleanedUp else { return }
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, !self.isCleanedUp else { return }
             self.eventSink?([
                 EventChannelConstants.KEY_TYPE: type,
                 EventChannelConstants.KEY_VALUE: data
@@ -143,8 +180,11 @@ private enum OtaConstants {
         }
     }
     
-    /// 发送文件列表到Flutter
+    /// Send the list of OTA files to Flutter with their sizes
     private func sendFileListToFlutter() {
+        // Don't send events if cleaned up
+        guard !isCleanedUp else { return }
+        
         let filesWithSize = itemArray.map { filePath -> (path: String, size: Double, name: String) in
             var fileSize: Double = 0.0
             do {
@@ -176,50 +216,100 @@ private enum OtaConstants {
         sendEvent(type: EventChannelConstants.TYPE_OTA_FILE_LIST, data: data)
     }
     
-    /// 下载文件操作
+    /// Perform the file download action
     private func downloadAction(url: String) {
-        let configuration = URLSessionConfiguration.default
-        let manager = AFURLSessionManager(sessionConfiguration: configuration)
-        
-        guard let URL = URL(string: url) else {
-            sendDownloadStatusEvent(status: EventChannelConstants.STATUS_ON_ERROR, errorMsg: "Invalid URL")
+        // 1. Validate URL
+        guard let url = URL(string: url) else {
+            sendDownloadStatusEvent(status: EventChannelConstants.STATUS_ON_ERROR,
+                                   errorMsg: "Invalid URL")
             return
         }
         
-        let request = URLRequest(url: URL)
-        let fileName = (url as NSString).lastPathComponent
+        // 2. Create download task
+        let downloadTask = createDownloadTask(for: url)
         
-        let downloadTask = manager.downloadTask(
-            with: request,
-            progress: { [weak self] downloadProgress in
-                let progressValue = Int(downloadProgress.fractionCompleted * Double(OtaConstants.PROGRESS_MAX_PERCENT))
-                self?.sendDownloadStatusEvent(
-                    status: EventChannelConstants.STATUS_ON_PROGRESS,
-                    progress: progressValue
-                )
-            },
-            destination: { targetPath, response in
-                let suggestedFilename = response.suggestedFilename ?? fileName
-                return ToolsHelper.targetSavePath(suggestedFilename)
-            },
-            completionHandler: { [weak self] response, filePath, error in
-                if let error = error {
-                    self?.sendDownloadStatusEvent(
-                        status: EventChannelConstants.STATUS_ON_ERROR,
-                        errorMsg: error.localizedDescription
-                    )
-                } else if filePath != nil {
-                    self?.scanForUpdateFiles()
-                    self?.sendDownloadStatusEvent(status: EventChannelConstants.STATUS_ON_STOP)
-                }
-            }
-        )
-        
+        // 3. Start download
         downloadTask.resume()
     }
+
+    // MARK: - Private Download Helpers
+    private func createDownloadTask(for url: URL) -> URLSessionDownloadTask {
+        let manager = createSessionManager()
+        let request = URLRequest(url: url)
+        let fileName = extractFileName(from: url)
+        
+        return manager.downloadTask(
+            with: request,
+            progress: createProgressHandler(),
+            destination: createDestinationHandler(fileName: fileName),
+            completionHandler: createCompletionHandler()
+        )
+    }
+
+    /// Create the URLSession manager for handling downloads
+    private func createSessionManager() -> AFURLSessionManager {
+        let configuration = URLSessionConfiguration.default
+        return AFURLSessionManager(sessionConfiguration: configuration)
+    }
+
+    /// Extract the file name from a URL
+    private func extractFileName(from url: URL) -> String {
+        return url.lastPathComponent
+    }
+
+    /// Create the progress handler closure for tracking download progress
+    private func createProgressHandler() -> (Progress) -> Void {
+        return { [weak self] downloadProgress in
+            guard let self = self, !self.isCleanedUp else { return }
+            
+            let progress = Int(downloadProgress.fractionCompleted * Double(OtaConstants.PROGRESS_MAX_PERCENT))
+            self.sendDownloadStatusEvent(
+                status: EventChannelConstants.STATUS_ON_PROGRESS,
+                progress: progress
+            )
+        }
+    }
+
+    /// Create the destination handler closure for determining where to save the file
+    private func createDestinationHandler(fileName: String) -> (URL, URLResponse) -> URL {
+        return { targetPath, response in
+            let suggestedFilename = response.suggestedFilename ?? fileName
+            return ToolsHelper.targetSavePath(suggestedFilename)
+        }
+    }
+
+    /// Create the completion handler closure for handling download results
+    private func createCompletionHandler() -> (URLResponse, URL?, Error?) -> Void {
+        return { [weak self] response, filePath, error in
+            guard let self = self, !self.isCleanedUp else { return }
+            
+            if let error = error {
+                self.handleDownloadError(error)
+            } else if filePath != nil {
+                self.handleDownloadSuccess()
+            }
+        }
+    }
+
+    /// Handle successful download completion
+    private func handleDownloadSuccess() {
+        scanForUpdateFiles()
+        sendDownloadStatusEvent(status: EventChannelConstants.STATUS_ON_STOP)
+    }
+
+    /// Handle download error
+    private func handleDownloadError(_ error: Error) {
+        sendDownloadStatusEvent(
+            status: EventChannelConstants.STATUS_ON_ERROR,
+            errorMsg: error.localizedDescription
+        )
+    }
     
-    /// 发送下载状态事件
+    /// Send download status event to Flutter
     private func sendDownloadStatusEvent(status: String, progress: Int? = nil, errorMsg: String? = nil) {
+        // Don't send events if cleaned up
+        guard !isCleanedUp else { return }
+        
         var eventMap: [String: Any] = [EventChannelConstants.KEY_STATUS: status]
         
         if let progress = progress, status == EventChannelConstants.STATUS_ON_PROGRESS {
@@ -233,68 +323,96 @@ private enum OtaConstants {
         sendEvent(type: EventChannelConstants.TYPE_DOWNLOAD_STATUS, data: eventMap)
     }
     
-    /// 设置屏幕常亮
+    /// Set the screen keep-on state to prevent auto-lock during OTA
     private func setKeepScreenOn(_ enable: Bool) {
         UIApplication.shared.isIdleTimerDisabled = enable
     }
     
-    /// 处理OTA结果
+    /// Handle OTA result and return appropriate event data
     private func handleOtaResult(_ result: JL_OTAResult, progress: Float) -> [String: Any] {
-        let resultOtaUpgradingDict = [
-            EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_WORKING,
-            EventChannelConstants.KEY_TYPE: EventChannelConstants.MSG_UPGRADING,
-            EventChannelConstants.KEY_PROGRESS: Int(round(progress * Float(OtaConstants.PROGRESS_MAX_PERCENT)))
-        ] as [String : Any]
-
         switch result {
         case .preparing:
-            setKeepScreenOn(true)
-            return [
-                EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_WORKING,
-                EventChannelConstants.KEY_TYPE: EventChannelConstants.MSG_CHECKING_FILE,
-                EventChannelConstants.KEY_PROGRESS: Int(round(progress * Float(OtaConstants.PROGRESS_MAX_PERCENT)))
-            ]
+            return handlePreparing(progress)
             
         case .reconnect:
-            JLBleHandler.share().handleReconnectByUUID()
-            return [EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_RECONNECT]
+            return handleReconnect()
             
         case .reconnectWithMacAddr:
-            JLBleHandler.share().handleReconnectByMac()
-            return [EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_RECONNECT]
+            return handleReconnectWithMac()
             
         case .prepared:
-            return [
-                EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_WORKING,
-                EventChannelConstants.KEY_TYPE: EventChannelConstants.MSG_CHECKING_FILE,
-                EventChannelConstants.KEY_PROGRESS: OtaConstants.PROGRESS_MAX_PERCENT
-            ]
+            return handlePrepared()
             
         case .success, .reboot:
-            setKeepScreenOn(false)
-            return [
-                EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_IDLE,
-                EventChannelConstants.KEY_SUCCESS: true,
-                EventChannelConstants.KEY_CODE: OtaConstants.OTA_UPGRADE_SUCCESS_CODE,
-                EventChannelConstants.KEY_MESSAGE: EventChannelConstants.MSG_SUCCESS
-            ]
+            return handleSuccess()
             
         case .fail, .failCmdTimeout, .dataIsNull, .commandFail, .seekFail, .infoFail,
              .lowPower, .enterFail, .statusIsUpdating, .failedConnectMore, .failSameSN,
              .cancel, .failVerification, .failCompletely, .failKey, .failErrorFile,
              .failUboot, .failLenght, .failFlash, .failSameVersion, .failTWSDisconnect,
              .failNotInBin, .disconnect, .reconnectUpdateSource, .unknown:
-            setKeepScreenOn(false)
-            let errorReason = ToolsHelper.errorReason(result)
-            return [
-                EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_IDLE,
-                EventChannelConstants.KEY_SUCCESS: false,
-                EventChannelConstants.KEY_MESSAGE: errorReason
-            ]
-            case .upgrading:
-                return resultOtaUpgradingDict
-            default:
-                return resultOtaUpgradingDict
+            return handleFailure(result)
+            
+        case .upgrading:
+            return makeUpgradingResult(progress)
+            
+        @unknown default:
+            return makeUpgradingResult(progress)
         }
+    }
+
+    private func handlePreparing(_ progress: Float) -> [String: Any] {
+        setKeepScreenOn(true)
+        return [
+            EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_WORKING,
+            EventChannelConstants.KEY_TYPE: EventChannelConstants.MSG_CHECKING_FILE,
+            EventChannelConstants.KEY_PROGRESS: Int(round(progress * Float(OtaConstants.PROGRESS_MAX_PERCENT)))
+        ]
+    }
+
+    private func handleReconnect() -> [String: Any] {
+        JLBleHandler.share().handleReconnectByUUID()
+        return [EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_RECONNECT]
+    }
+
+    private func handleReconnectWithMac() -> [String: Any] {
+        JLBleHandler.share().handleReconnectByMac()
+        return [EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_RECONNECT]
+    }
+
+    private func handlePrepared() -> [String: Any] {
+        return [
+            EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_WORKING,
+            EventChannelConstants.KEY_TYPE: EventChannelConstants.MSG_CHECKING_FILE,
+            EventChannelConstants.KEY_PROGRESS: OtaConstants.PROGRESS_MAX_PERCENT
+        ]
+    }
+
+    private func handleSuccess() -> [String: Any] {
+        setKeepScreenOn(false)
+        return [
+            EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_IDLE,
+            EventChannelConstants.KEY_SUCCESS: true,
+            EventChannelConstants.KEY_CODE: OtaConstants.OTA_UPGRADE_SUCCESS_CODE,
+            EventChannelConstants.KEY_MESSAGE: EventChannelConstants.MSG_SUCCESS
+        ]
+    }
+
+    private func handleFailure(_ result: JL_OTAResult) -> [String: Any] {
+        setKeepScreenOn(false)
+        let errorReason = ToolsHelper.errorReason(result)
+        return [
+            EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_IDLE,
+            EventChannelConstants.KEY_SUCCESS: false,
+            EventChannelConstants.KEY_MESSAGE: errorReason
+        ]
+    }
+
+    private func makeUpgradingResult(_ progress: Float) -> [String: Any] {
+        return [
+            EventChannelConstants.KEY_STATE: EventChannelConstants.STATE_WORKING,
+            EventChannelConstants.KEY_TYPE: EventChannelConstants.MSG_UPGRADING,
+            EventChannelConstants.KEY_PROGRESS: Int(round(progress * Float(OtaConstants.PROGRESS_MAX_PERCENT)))
+        ]
     }
 }

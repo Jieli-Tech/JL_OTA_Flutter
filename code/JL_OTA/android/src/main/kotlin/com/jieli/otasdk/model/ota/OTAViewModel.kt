@@ -65,7 +65,7 @@ class OTAViewModel : BluetoothViewModel() {
         }
     }
 
-    private val otaManager = OTAManager(getContext())
+    val otaManager = OTAManager(getContext())
     val fileListMLD = MutableLiveData<MutableList<File>>()
     val otaConnectionMLD = MutableLiveData<DeviceConnection>()
     val mandatoryUpgradeMLD = MutableLiveData<BluetoothDevice>()
@@ -119,6 +119,15 @@ class OTAViewModel : BluetoothViewModel() {
 
     fun isOTA(): Boolean = otaManager.isOTA
 
+    fun isUseAuthDevice(): Boolean = configHelper.isUseDeviceAuth()
+
+    override fun isDeviceConnected(device: BluetoothDevice?): Boolean {
+        return super.isDeviceConnected(device) || BluetoothUtil.deviceEquals(
+            device,
+            otaManager.targetDevice
+        )
+    }
+
     fun getDeviceInfo(): TargetInfoResponse? = otaManager.getDeviceInfo(getConnectedDevice())
 
     fun readFileList() {
@@ -146,7 +155,7 @@ class OTAViewModel : BluetoothViewModel() {
         otaManager.bluetoothOption.firmwareFilePath = filePath
         otaManager.startOTA(
             CustomUpdateCallback(
-                getContext(), device, this
+                getContext(), device, otaManager, this
             )
         )
     }
@@ -174,6 +183,7 @@ class OTAViewModel : BluetoothViewModel() {
     private class CustomUpdateCallback(
         val context: Context,
         val device: BluetoothDevice?,
+        val otaManager: OTAManager,
         val viewModel: OTAViewModel
     ) : IUpgradeCallback {
 
@@ -182,6 +192,15 @@ class OTAViewModel : BluetoothViewModel() {
         }
 
         override fun onNeedReconnect(addr: String?, isNewReconnectWay: Boolean) {
+            // 如果开启自动回连设备，而且回连设备需要开启设备认证流程，请在此配置
+            otaManager.bluetoothOption.apply {
+                if (isAutoConnectBle) {
+                    if (!isUseAuthDevice && viewModel.isUseAuthDevice()) {
+                        isUseAuthDevice = true
+                    }
+                }
+            }
+
             viewModel.otaStateMLD.value = OTAReconnect(device, addr, isNewReconnectWay)
             if (viewModel.isUseReconnectWay()) {
                 viewModel.reconnectDev(addr, isNewReconnectWay)

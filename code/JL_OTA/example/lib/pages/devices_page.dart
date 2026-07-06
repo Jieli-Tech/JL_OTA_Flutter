@@ -18,6 +18,45 @@ import '../widgets/device_filter_widget.dart';
 import '../widgets/connect_list.dart';
 import '../utils/data_notifier.dart';
 
+/// UI Constants
+class DevicesPageUIConstants {
+  static const double appBarTitleSize = 18;
+  static const double spacingSmall = 10;
+  static const int delayMilliseconds = 500;
+  static const int connectionTimeoutSeconds = 15;
+}
+
+/// Color Constants
+class DevicesPageColorConstants {
+  static const Color primaryTextColor = Color(0xFF242424);
+  static const Color backgroundColor = Colors.white;
+}
+
+/// Method Channel Constants
+class MethodChannelConstants {
+  static const String channelName = 'com.jieli.ble_plugin/methods';
+}
+
+/// Regular Expression Constants
+class RegexConstants {
+  static const String macAddressPattern = r'[0-9A-Fa-f:]+';
+  static const String addressGroupName = 'address';
+  static const String addressPattern = '$addressGroupName: ($macAddressPattern)';
+}
+
+/// OTA State Constants
+class OtaStateConstants {
+  static const String keyState = BleEventConstants.KEY_STATE;
+  static const String keyStateUnknown = BleEventConstants.KEY_STATE_UNKNOWN;
+  static const String keyStateWorking = BleEventConstants.KEY_STATE_WORKING;
+}
+
+/// Scan State Constants
+class ScanStateConstants {
+  static const String stateScanning = BleEventConstants.SCAN_STATE_SCANNING;
+  static const String stateIdle = BleEventConstants.SCAN_STATE_IDLE;
+}
+
 /// Device Management Page
 ///
 /// Responsible for operations such as scanning, connecting, and disconnecting Bluetooth devices. Main functionalities include:
@@ -37,7 +76,7 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
   String _filterContent = "";
   List<ScanDevice> _devices = [];
   bool _isLoading = true;
-  static const int delayMilliseconds = 500; // 定义延迟时间为500毫秒
+
   StreamSubscription<List<ScanDevice>>? _scanSubscription;
   StreamSubscription<DeviceConnection>? _deviceConnectionSubscription;
   StreamSubscription<Map<String, dynamic>>? _otaConnectionSubscription;
@@ -46,14 +85,11 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
 
   late DialogManager _dialogManager;
 
-  static const MethodChannel _methodChannel = MethodChannel(
-    'com.jieli.ble_plugin/methods',
+  final MethodChannel _methodChannel = MethodChannel(
+    MethodChannelConstants.channelName,
   );
 
-  /// Add a class-level variable to track the dialog state
   bool _isOtaDialogShown = false;
-
-  /// Tracks whether the loading dialog is already shown
   bool _isDialogLoading = false;
 
   @override
@@ -70,24 +106,24 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
         title: Text(
           AppLocalizations.of(context)!.connect,
           style: const TextStyle(
-            color: Color(0xFF242424),
-            fontSize: 18,
+            color: DevicesPageColorConstants.primaryTextColor,
+            fontSize: DevicesPageUIConstants.appBarTitleSize,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: DevicesPageColorConstants.backgroundColor,
         centerTitle: true,
       ),
       body: RefreshIndicator(
         onRefresh: _restartScan,
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: DevicesPageUIConstants.spacingSmall),
             DeviceFilterWidget(
               filterContent: _filterContent,
               onFilterChanged: _handleFilterChanged,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: DevicesPageUIConstants.spacingSmall),
             Expanded(
               child: ConnectListView(
                 devices: _filteredDevices,
@@ -103,7 +139,6 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Restart scan when app resumes
     if (state == AppLifecycleState.resumed) {
       _restartScan();
     }
@@ -115,7 +150,6 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  /// Initialize the application by loading preferences and setting up listeners
   void _initializeApp() async {
     await _loadFilterContent();
     _setupEventListeners();
@@ -123,7 +157,6 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     _initData();
   }
 
-  /// Load filter content from shared preferences
   Future<void> _loadFilterContent() async {
     try {
       final content = await FilePreferenceManager.loadFilterContent();
@@ -137,7 +170,6 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     }
   }
 
-  /// Set up all event listeners for Bluetooth events
   void _setupEventListeners() {
     _subscribeToScanListStream();
     _subscribeToScanStateStream();
@@ -146,7 +178,13 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     _subscribeToOtaStateStream();
   }
 
-  /// Clean up resources when the widget is disposed
+  void _initData() {
+    _dialogManager = DialogManager(
+      context: context,
+      methodChannel: _methodChannel,
+    );
+  }
+
   void _cleanupResources() {
     _scanSubscription?.cancel();
     _deviceConnectionSubscription?.cancel();
@@ -166,28 +204,33 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
       } else if (item is Map) {
         return ScanDevice.fromMap(item);
       } else {
-        throw Exception('无法转换的类型: ${item.runtimeType}');
+        throw Exception('Unsupported type: ${item.runtimeType}');
       }
     }).toList();
   }
 
-  /// Subscribe to scan list changes
   void _subscribeToScanListStream() {
-    _scanSubscription = BleEventStream.scanDeviceListStream.listen((devices) {
-      setState(() => _devices = convertToScanDeviceList(devices));
-    }) as StreamSubscription<List<ScanDevice>>?;
+    _scanSubscription = BleEventStream.scanDeviceListStream.listen(
+      _handleScanDeviceListUpdate,
+    ) as StreamSubscription<List<ScanDevice>>?;
   }
 
-  /// Subscribe to scan state changes
+  void _handleScanDeviceListUpdate(List<dynamic> devices) {
+    if (!mounted) return;
+
+    final convertedDevices = convertToScanDeviceList(devices);
+    setState(() => _devices = convertedDevices);
+  }
+
   void _subscribeToScanStateStream() {
     _scanStateSubscription = BleEventStream.scanStateStream.listen(
-      (state) {
+          (state) {
         if (!mounted) return;
 
         setState(() {
-          if (state == BleEventConstants.SCAN_STATE_SCANNING) {
+          if (state == ScanStateConstants.stateScanning) {
             _isLoading = true;
-          } else if (state == BleEventConstants.SCAN_STATE_IDLE) {
+          } else if (state == ScanStateConstants.stateIdle) {
             _isLoading = false;
           }
         });
@@ -198,21 +241,19 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     );
   }
 
-  /// Restart the device scanning process
   Future<void> _restartScan() async {
     _stopScan();
     _startScan();
 
-    Future.delayed(Duration(milliseconds: delayMilliseconds), () {
+    Future.delayed(Duration(milliseconds: DevicesPageUIConstants.delayMilliseconds), () {
       if (mounted) {
         setState(() {
-          _isLoading = true; // Set loading to true
+          _isLoading = true;
         });
       }
     });
   }
 
-  /// Stop the current scan
   Future<void> _stopScan() async {
     try {
       await BleMethod.stopScan();
@@ -221,21 +262,11 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     }
   }
 
-  /// Start scanning for Bluetooth devices
   void _startScan() async {
     if (!mounted) return;
     await BleMethod.startScan();
   }
 
-  /// Init data
-  void _initData() {
-    _dialogManager = DialogManager(
-      context: context,
-      methodChannel: _methodChannel,
-    );
-  }
-
-  /// Subscribe to device connection state changes
   void _subscribeToDeviceConnectionStream() {
     _deviceConnectionSubscription = BleEventStream.deviceConnectionStream
         .listen(
@@ -243,20 +274,18 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
         log("Device connection status: ${connection.state}");
 
         if (connection.state == AppConstants.connectionConnecting) {
-          // Show loading dialog when the device is connecting
           if (mounted && !_isDialogLoading) {
             await LoadingDialog.showLoadingDialog(
               context,
-              timeoutSeconds: 15,
-            ); // timeoutSeconds: 15 seconds timeout
-            _isDialogLoading = true; // Mark that the loading dialog is shown
+              timeoutSeconds: DevicesPageUIConstants.connectionTimeoutSeconds,
+            );
+            _isDialogLoading = true;
           }
         } else {
-          // Dismiss the loading dialog if it is visible
           if (mounted && Navigator.canPop(context)) {
             await LoadingDialog.hideLoadingDialog();
           }
-          _isDialogLoading = false; // Reset the connection status
+          _isDialogLoading = false;
         }
       },
       onError: (error) {
@@ -265,66 +294,17 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     ) as StreamSubscription<DeviceConnection>?;
   }
 
-  /// Get filtered list of devices based on search content, ensuring no duplicates
-  List<ScanDevice> get _filteredDevices {
-    // Use a Map to remove duplicates by MAC address
-    final Map<String, ScanDevice> uniqueDevices = {};
-
-    for (final device in _devices) {
-      // Try to extract MAC address from device description
-      final address = _extractAddressFromDescription(device.description);
-
-      // Use MAC address as key if available, otherwise fall back to device name
-      final key = address ?? device.name;
-
-      // Only add the device if we haven't seen it before, or if this instance is more recent
-      if (!uniqueDevices.containsKey(key)) {
-        uniqueDevices[key] = device;
-      }
-    }
-
-    // Convert back to list
-    final distinctDevices = uniqueDevices.values.toList();
-
-    // Apply filter if needed
-    if (_filterContent.isEmpty) return distinctDevices;
-
-    return distinctDevices.where((device) {
-      return device.name.toLowerCase().contains(_filterContent.toLowerCase());
-    }).toList();
-  }
-
-  /// Handle filter content changes
-  void _handleFilterChanged(String value) {
-    setState(() {
-      _filterContent = value;
-    });
-  }
-
-  /// Extracts the MAC address from a device description string.
-  String? _extractAddressFromDescription(String description) {
-    const addressGroupName = 'address';
-    const macAddressPattern = r'[0-9A-Fa-f:]+';
-    final addressPattern = RegExp('$addressGroupName: ($macAddressPattern)');
-    final match = addressPattern.firstMatch(description);
-    return match?.group(RegexCaptureGroups.address);
-  }
-
-  /// Handle device tap events (connect/disconnect)
   void _handleDeviceTapped(ScanDevice device) {
-    // Try to extract address first
     final deviceAddress = _extractAddressFromDescription(device.description);
 
     int index;
 
     if (deviceAddress != null) {
-      // Use address for matching if available
       index = _devices.indexWhere((d) {
         final dAddress = _extractAddressFromDescription(d.description);
         return dAddress == deviceAddress;
       });
     } else {
-      // Use device description directly as a unique identifier for matching
       index = _devices.indexWhere((d) => d.description == device.description);
     }
 
@@ -337,30 +317,58 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     }
   }
 
-  /// Connect to a device at the specified index
   void _connectToDevice(int index) async {
     try {
       await BleMethod.connectDevice(index);
     } catch (e) {
       log("Failed to connect to device: $e");
-      // Optionally show an error message to the user
     }
   }
 
-  /// Disconnect from a device at the specified index
   void _disconnectBtDevice(int index) async {
     try {
       await BleMethod.disconnectBtDevice(index);
     } catch (e) {
       log("Failed to disconnect from device: $e");
-      // Optionally show an error message to the user
     }
   }
 
-  /// Subscribe to OTA connection events
+  List<ScanDevice> get _filteredDevices {
+    final Map<String, ScanDevice> uniqueDevices = {};
+
+    for (final device in _devices) {
+      final address = _extractAddressFromDescription(device.description);
+      final key = address ?? device.name;
+
+      if (!uniqueDevices.containsKey(key)) {
+        uniqueDevices[key] = device;
+      }
+    }
+
+    final distinctDevices = uniqueDevices.values.toList();
+
+    if (_filterContent.isEmpty) return distinctDevices;
+
+    return distinctDevices.where((device) {
+      return device.name.toLowerCase().contains(_filterContent.toLowerCase());
+    }).toList();
+  }
+
+  void _handleFilterChanged(String value) {
+    setState(() {
+      _filterContent = value;
+    });
+  }
+
+  String? _extractAddressFromDescription(String description) {
+    final addressPattern = RegExp(RegexConstants.addressPattern);
+    final match = addressPattern.firstMatch(description);
+    return match?.group(RegexCaptureGroups.address);
+  }
+
   void _subscribeToOtaConnectionStream() {
     _otaConnectionSubscription = BleEventStream.otaConnectionStream.listen(
-      (otaData) {
+          (otaData) {
         if (mounted) {
           Provider.of<DataNotifier>(context, listen: false).setOtaData(otaData);
         }
@@ -371,39 +379,34 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
     );
   }
 
-  /// Subscribe to OTA state
   void _subscribeToOtaStateStream() {
     if (AppUtil.isIOS) {
-      _otaStateSubscription = BleEventStream.otaStateStream.listen((
-        otaData,
-      ) {
-        if (mounted) {
-          setState(() {
-            updateOtaState(otaData);
-          });
-        }
-      });
+      _otaStateSubscription = BleEventStream.otaStateStream.listen(
+            (otaData) {
+          if (mounted) {
+            setState(() {
+              updateOtaState(otaData);
+            });
+          }
+        },
+      );
     }
   }
 
-  /// Update OTA state
   void updateOtaState(Map<String, dynamic> otaData) {
     if (!mounted) return;
 
     final newOtaState =
-        otaData[BleEventConstants.KEY_STATE] as String? ??
-        BleEventConstants.KEY_STATE_UNKNOWN;
+        otaData[OtaStateConstants.keyState] as String? ??
+            OtaStateConstants.keyStateUnknown;
 
-    // Handle data for different states
     switch (newOtaState) {
-      case BleEventConstants.KEY_STATE_WORKING:
-        // Only show dialog if it hasn't been shown yet
+      case OtaStateConstants.keyStateWorking:
         if (!_isOtaDialogShown) {
           setState(() {
             _isOtaDialogShown = true;
           });
 
-          // Asynchronous operations are placed outside of setState
           _dialogManager.showOtaDialog().then((_) {
             if (mounted) {
               setState(() {
@@ -418,5 +421,5 @@ class _DevicesPageState extends State<DevicesPage> with WidgetsBindingObserver {
 }
 
 class RegexCaptureGroups {
-  static const int address = 1; // Define index constant
+  static const int address = 1;
 }

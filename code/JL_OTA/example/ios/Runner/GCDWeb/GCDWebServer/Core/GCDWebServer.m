@@ -664,83 +664,147 @@ static inline NSString* _EncodeBase64(NSString* string) {
 }
 
 - (void)_stop {
-  GWS_DCHECK(_source4 != NULL);
-
-  if (_dnsService) {
-    _dnsAddress = nil;
-    _dnsPort = 0;
-    if (_dnsSource) {
-      CFRunLoopSourceInvalidate(_dnsSource);
-      CFRelease(_dnsSource);
-      _dnsSource = NULL;
+    GWS_DCHECK(_source4 != NULL);
+    
+    // Add stop flag to prevent recursive stop calls
+    static dispatch_once_t onceToken;
+    static NSInteger stopDepth = 0;
+    @synchronized(self) {
+        if (stopDepth > 0) {
+            GWS_LOG_WARNING(@"%@ already stopping, skip recursive stop", [self class]);
+            return;
+        }
+        stopDepth++;
     }
-    if (_dnsSocket) {
-      CFRelease(_dnsSocket);
-      _dnsSocket = NULL;
-    }
-    DNSServiceRefDeallocate(_dnsService);
-    _dnsService = NULL;
-  }
 
-  if (_registrationService) {
-    if (_resolutionService) {
-      CFNetServiceUnscheduleFromRunLoop(_resolutionService, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-      CFNetServiceSetClient(_resolutionService, NULL, NULL);
-      CFNetServiceCancel(_resolutionService);
-      CFRelease(_resolutionService);
-      _resolutionService = NULL;
+    // Clean up DNS service resources
+    if (_dnsService) {
+        _dnsAddress = nil;
+        _dnsPort = 0;
+        if (_dnsSource) {
+            CFRunLoopSourceInvalidate(_dnsSource);
+            CFRelease(_dnsSource);
+            _dnsSource = NULL;
+        }
+        if (_dnsSocket) {
+            CFRelease(_dnsSocket);
+            _dnsSocket = NULL;
+        }
+        DNSServiceRefDeallocate(_dnsService);
+        _dnsService = NULL;
     }
-    CFNetServiceUnscheduleFromRunLoop(_registrationService, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-    CFNetServiceSetClient(_registrationService, NULL, NULL);
-    CFNetServiceCancel(_registrationService);
-    CFRelease(_registrationService);
-    _registrationService = NULL;
-  }
 
-  dispatch_source_cancel(_source6);
-  dispatch_source_cancel(_source4);
-  dispatch_group_wait(_sourceGroup, DISPATCH_TIME_FOREVER);  // Wait until the cancellation handlers have been called which guarantees the listening sockets are closed
+    // Clean up NetService registration and resolution resources
+    if (_registrationService) {
+        if (_resolutionService) {
+            CFNetServiceUnscheduleFromRunLoop(_resolutionService, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+            CFNetServiceSetClient(_resolutionService, NULL, NULL);
+            CFNetServiceCancel(_resolutionService);
+            CFRelease(_resolutionService);
+            _resolutionService = NULL;
+        }
+        CFNetServiceUnscheduleFromRunLoop(_registrationService, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+        CFNetServiceSetClient(_registrationService, NULL, NULL);
+        CFNetServiceCancel(_registrationService);
+        CFRelease(_registrationService);
+        _registrationService = NULL;
+    }
+
+    // Cancel dispatch sources and wait for completion handlers
+    dispatch_source_cancel(_source6);
+    dispatch_source_cancel(_source4);
+    dispatch_group_wait(_sourceGroup, DISPATCH_TIME_FOREVER);
+    
 #if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
-  dispatch_release(_source6);
+    dispatch_release(_source6);
 #endif
-  _source6 = NULL;
+    _source6 = NULL;
+    
 #if !OS_OBJECT_USE_OBJC_RETAIN_RELEASE
-  dispatch_release(_source4);
+    dispatch_release(_source4);
 #endif
-  _source4 = NULL;
-  _port = 0;
-  _bindToLocalhost = NO;
+    _source4 = NULL;
+    
+    // Reset server configuration
+    _port = 0;
+    _bindToLocalhost = NO;
 
-  _serverName = nil;
-  _authenticationRealm = nil;
-  _authenticationBasicAccounts = nil;
-  _authenticationDigestAccounts = nil;
+    // Clear server properties
+    _serverName = nil;
+    _authenticationRealm = nil;
+    _authenticationBasicAccounts = nil;
+    _authenticationDigestAccounts = nil;
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (self->_disconnectTimer) {
-      CFRunLoopTimerInvalidate(self->_disconnectTimer);
-      CFRelease(self->_disconnectTimer);
-      self->_disconnectTimer = NULL;
-      [self _didDisconnect];
-    }
-  });
-
-  GWS_LOG_INFO(@"%@ stopped", [self class]);
-  if ([_delegate respondsToSelector:@selector(webServerDidStop:)]) {
+    // Clean up disconnect timer on main thread
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self->_delegate webServerDidStop:self];
+        if (self->_disconnectTimer) {
+            CFRunLoopTimerInvalidate(self->_disconnectTimer);
+            CFRelease(self->_disconnectTimer);
+            self->_disconnectTimer = NULL;
+            [self _didDisconnect];
+        }
     });
-  }
+
+    GWS_LOG_INFO(@"%@ stopped", [self class]);
+    
+    // Safely handle delegate callback to prevent crashes during deallocation
+    id<GCDWebServerDelegate> delegateToNotify = _delegate;
+    
+    // Immediately clear delegate reference to prevent access during callback
+    _delegate = nil;
+    
+    // Check if delegate is valid and responds to the selector
+    if (delegateToNotify && [delegateToNotify respondsToSelector:@selector(webServerDidStop:)]) {
+        // Use weak references to avoid retain cycles and perform safety checks within the block
+        __weak typeof(self) weakSelf = self;
+        __weak typeof(delegateToNotify) weakDelegate = delegateToNotify;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Convert weak references back to strong references
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            __strong typeof(weakDelegate) strongDelegate = weakDelegate;
+            
+            // Double-check that both objects still exist and haven't been deallocated
+            if (strongSelf && strongDelegate) {
+                @try {
+                    // Notify delegate that server has stopped
+                    [strongDelegate webServerDidStop:strongSelf];
+                } @catch (NSException *exception) {
+                    // Catch any exceptions to prevent app crash
+                    GWS_LOG_ERROR(@"Exception in webServerDidStop callback: %@", exception);
+                }
+            } else {
+                GWS_LOG_DEBUG(@"Delegate already deallocated, skip callback");
+            }
+        });
+    }
+    
+    // Decrement stop depth counter
+    @synchronized(self) {
+        stopDepth--;
+    }
 }
+
 
 #if TARGET_OS_IPHONE
 
 - (void)_didEnterBackground:(NSNotification*)notification {
-  GWS_DCHECK([NSThread isMainThread]);
-  GWS_LOG_DEBUG(@"Did enter background");
-  if ((_backgroundTask == UIBackgroundTaskInvalid) && _source4) {
-    [self _stop];
-  }
+    GWS_DCHECK([NSThread isMainThread]);
+    GWS_LOG_DEBUG(@"Did enter background");
+    
+    // Add extra check to avoid stopping the server when the app is terminating
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        // Delay execution slightly to ensure the notification processing chain completes
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // Check again to ensure the server still needs to be stopped
+            if ((self->_backgroundTask == UIBackgroundTaskInvalid) && self->_source4) {
+                [self _stop];
+            }
+        });
+    } else if ((_backgroundTask == UIBackgroundTaskInvalid) && _source4) {
+        // Stop immediately if not in background state (e.g., app termination)
+        [self _stop];
+    }
 }
 
 - (void)_willEnterForeground:(NSNotification*)notification {

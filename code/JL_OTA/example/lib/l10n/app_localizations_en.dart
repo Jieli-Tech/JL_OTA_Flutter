@@ -47,8 +47,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseSetFilter => 'Please set filter';
 
   @override
-  String get copyRight =>
-      'Copyright @2021–2025 Zhuhai Jieli Technology co., LTD All Rights Reserved';
+  String get copyRight => 'Copyright @2021–2025 Zhuhai Jieli Technology co., LTD All Rights Reserved';
 
   @override
   String get companyName => 'Zhuhai Jieli Technology co., LTD';
@@ -57,8 +56,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicyDialogTitle => 'User Agreement And Privacy Policy';
 
   @override
-  String get welcomeMessage =>
-      '　Welcome to Jieli OTA Update!\n　We take your privacy and personal information protection very seriously. Before using the \"Jieli OTA Update\" service, please read carefully';
+  String get welcomeMessage => '　Welcome to Jieli OTA Update!\n　We take your privacy and personal information protection very seriously. Before using the \"Jieli OTA Update\" service, please read carefully';
 
   @override
   String get userAgreement => 'User Agreement';
@@ -70,8 +68,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'Privacy Policy';
 
   @override
-  String get agreementText =>
-      ', and fully understand the terms of the agreement.\n　If you agree and accept this notice and the relevant agreement content, please click Agree to start using our service.';
+  String get agreementText => ', and fully understand the terms of the agreement.\n　If you agree and accept this notice and the relevant agreement content, please click Agree to start using our service.';
 
   @override
   String get agreeButton => 'Agree';
@@ -107,6 +104,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get communicationWaySpp => 'SPP';
 
   @override
+  String get communicationWayGatt => 'GATT Over BR/EDR';
+
+  @override
   String get adjustMtu => 'Adjust MTU';
 
   @override
@@ -119,8 +119,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutApp => 'About app';
 
   @override
-  String get saveAndRestartMessage =>
-      'Settings saved. Restart app to apply changes?';
+  String get saveAndRestartMessage => 'Settings saved. Restart app to apply changes?';
 
   @override
   String get restart => 'Restart';
@@ -138,8 +137,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get icpInfo => 'ICP Registration Information';
 
   @override
-  String get isDeleteAllLogFiles =>
-      'Are you sure you want to delete all log files?';
+  String get isDeleteAllLogFiles => 'Are you sure you want to delete all log files?';
 
   @override
   String get deviceStatus => 'Device status';
@@ -187,12 +185,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceStarted => 'Service started';
 
   @override
-  String get ensureConnection =>
-      'Please ensure the device is connected to the same Wi-Fi or to this device\'s hotspot';
+  String get ensureConnection => 'Please ensure the device is connected to the same Wi-Fi or to this device\'s hotspot';
 
   @override
-  String get copySuccess =>
-      'Copy successful, please open in the connected device\'s browser';
+  String get copySuccess => 'Copy successful, please open in the connected device\'s browser';
 
   @override
   String get collapse => 'Collapse';
@@ -204,12 +200,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectUpgradeFile => 'Please select upgrade file';
 
   @override
-  String get upgradeProcessTip =>
-      '(During the upgrade process, please keep Bluetooth and network enabled)';
+  String get upgradeProcessTip => '(During the upgrade process, please keep Bluetooth and network enabled)';
 
   @override
-  String get fileVerificationComplete =>
-      'File verification complete, reconnecting to device…';
+  String get fileVerificationComplete => 'File verification complete, reconnecting to device…';
 
   @override
   String get reason => 'Reason: %s';
@@ -254,24 +248,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrcodeIntoBox => 'Place the QR code/barcode inside the frame';
 
   @override
-  String get failPhotosSystemReason =>
-      'Unable to access photos due to system reasons';
+  String get failPhotosSystemReason => 'Unable to access photos due to system reasons';
 
   @override
-  String get accessCameraReason =>
-      'Camera access is required to scan QR codes for downloading resources';
+  String get accessCameraReason => 'Camera access is required to scan QR codes for downloading resources';
 
   @override
-  String get accessPhotosReason =>
-      'Photo album access is required to scan QR codes for downloading resources';
+  String get accessPhotosReason => 'Photo album access is required to scan QR codes for downloading resources';
 
   @override
-  String get systemSetCamera =>
-      'This feature requires your camera, please go to system settings to grant permission';
+  String get systemSetCamera => 'This feature requires your camera, please go to system settings to grant permission';
 
   @override
-  String get systemSetExternalStorage =>
-      'This feature requires your phone storage, please go to system settings to grant permission';
+  String get systemSetExternalStorage => 'This feature requires your phone storage, please go to system settings to grant permission';
 
   @override
   String get downloadSavePending => 'Saving file. Please be patient...';
@@ -301,9 +290,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareUfwFile => 'Share ufw file';
 
   @override
-  String get shareUfwFileTips =>
-      'Instructions for sharing ufw files from third-party apps';
+  String get shareUfwFileTips => 'Instructions for sharing ufw files from third-party apps';
 
   @override
   String get deviceMustMandatoryUpgrade => 'Device must be forced to upgrade';
+
+  @override
+  String get bluetoothDisconnected => 'Bluetooth disconnected';
+
+  @override
+  String get gattUuidPlaceholder => 'Please enter one or more UUIDs, separated by commas or newlines';
+
+  @override
+  String get gattServiceUuid => 'GATT Service UUID';
+
+  @override
+  String get gattUuidTips => 'Example: 180A, 0000180D-0000-1000-8000-00805F9B34FB';
+
+  @override
+  String get gattUuidErrorEmpty => 'Please enter at least one UUID';
+
+  @override
+  String get gattUuidErrorInvalidFmt => 'Invalid UUID format:\n%s';
+
+  @override
+  String get customCommand => 'Custom command';
+
+  @override
+  String get sendCustomCmd => 'Send custom command';
+
+  @override
+  String get receivedData => 'Received data';
+
+  @override
+  String get inputData => 'Input data';
 }

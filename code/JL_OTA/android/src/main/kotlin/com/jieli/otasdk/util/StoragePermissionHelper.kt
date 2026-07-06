@@ -27,8 +27,6 @@ class StoragePermissionHelper(private val context: Context) {
 
     private fun checkExternalStorageEnvironment() {
         when (context) {
-//            is AppCompatActivity -> registerLauncher(context)
-//            is FragmentActivity -> registerLauncher(context)
             is FlutterActivity -> requestPermissionsForFlutterActivity(context)
             else -> {
                 callback?.onSuccess(false)
@@ -36,29 +34,6 @@ class StoragePermissionHelper(private val context: Context) {
             }
         }
     }
-
-//    private fun registerLauncher(activity: FragmentActivity) {
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-//            !PermissionUtil.hasReadStoragePermission(activity)) {
-//
-//            val launcher = activity.registerForActivityResult(
-//                ActivityResultContracts.RequestMultiplePermissions()
-//            ) { permissions ->
-//                val granted = permissions.all { it.value == true }
-//                callback?.onSuccess(granted)
-//                callback = null
-//            }
-//
-//            launcher.launch(
-//                arrayOf(
-//                    Manifest.permission.READ_EXTERNAL_STORAGE
-//                )
-//            )
-//        } else {
-//            callback?.onSuccess(true)
-//            callback = null
-//        }
-//    }
 
     private fun requestPermissionsForFlutterActivity(activity: FlutterActivity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&

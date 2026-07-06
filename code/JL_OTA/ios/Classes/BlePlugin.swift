@@ -39,25 +39,13 @@ public class BlePlugin: NSObject, FlutterPlugin {
             binaryMessenger: registrar.messenger()
         )
 
-        // Get FlutterViewController
-        if let window = UIApplication.shared.delegate?.window,
-        let flutterViewController = window?.rootViewController as? FlutterViewController {
-
-            // Create handlers
-            instance.eventChannelHandler = EventChannelHandler(flutterViewController: flutterViewController)
-            instance.methodChannelHandler = MethodChannelHandler(
-                flutterViewController: flutterViewController,
-                eventChannelHandler: instance.eventChannelHandler
-            )
-
-            // Setup handlers
-            instance.methodChannel?.setMethodCallHandler(instance.methodChannelHandler?.handle)
-            instance.eventChannel?.setStreamHandler(instance.eventChannelHandler)
-
-            JLLogManager.logLevel(.DEBUG, content: "BLE Plugin registered successfully")
-        } else {
+        guard UIApplication.shared.delegate?.window != nil else {
             JLLogManager.logLevel(.ERROR, content: "Failed to obtain FlutterViewController for BLE Plugin")
+            return
         }
+
+        // Setup handlers
+        instance.setupHandlers()
 
         // Register this instance as the plugin
         registrar.addMethodCallDelegate(instance, channel: instance.methodChannel!)
@@ -66,6 +54,17 @@ public class BlePlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         // Forward all method calls to the MethodChannelHandler
         methodChannelHandler?.handle(call, result: result)
+    }
+
+    /// Creates and configures the channel handlers
+    private func setupHandlers() {
+        // Create handlers
+        eventChannelHandler = EventChannelHandler()
+        methodChannelHandler = MethodChannelHandler(eventChannelHandler: eventChannelHandler)
+
+        // Setup handlers
+        methodChannel?.setMethodCallHandler(methodChannelHandler?.handle)
+        eventChannel?.setStreamHandler(eventChannelHandler)
     }
 
     // MARK: - Cleanup
@@ -82,6 +81,5 @@ public class BlePlugin: NSObject, FlutterPlugin {
 
     deinit {
         dispose()
-        JLLogManager.logLevel(.DEBUG, content: "BlePlugin deinitialized")
     }
 }

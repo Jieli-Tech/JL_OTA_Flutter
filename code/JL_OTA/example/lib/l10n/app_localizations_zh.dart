@@ -56,8 +56,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privacyPolicyDialogTitle => '用户协议和隐私政策';
 
   @override
-  String get welcomeMessage =>
-      '　欢迎使用杰理OTA升级！\n　我们非常重视您的隐私保护和个人信息保护，在您使用“杰理OTA升级”服务之前，请务必认真阅读';
+  String get welcomeMessage => '　欢迎使用杰理OTA升级！\n　我们非常重视您的隐私保护和个人信息保护，在您使用“杰理OTA升级”服务之前，请务必认真阅读';
 
   @override
   String get userAgreement => '《用户协议》';
@@ -69,8 +68,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privacyPolicy => '《隐私政策》';
 
   @override
-  String get agreementText =>
-      '，并充分理解协议条款内容。\n　如您同意并接受本提示及相关协议内容，请点击同意，开始接受我们的服务。';
+  String get agreementText => '，并充分理解协议条款内容。\n　如您同意并接受本提示及相关协议内容，请点击同意，开始接受我们的服务。';
 
   @override
   String get agreeButton => '同意';
@@ -104,6 +102,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get communicationWaySpp => 'SPP';
+
+  @override
+  String get communicationWayGatt => 'GATT Over BR/EDR';
 
   @override
   String get adjustMtu => '调整MTU';
@@ -289,9 +290,38 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shareUfwFile => '共享ufw文件';
 
   @override
-  String get shareUfwFileTips =>
-      '从第三方APP（微信/钉钉）通过\"其他应用打开\">打开ufw文件，共享到当前OTA升级中';
+  String get shareUfwFileTips => '从第三方APP（微信/钉钉）通过\"其他应用打开\">打开ufw文件，共享到当前OTA升级中';
 
   @override
   String get deviceMustMandatoryUpgrade => '设备需要强制升级';
+
+  @override
+  String get bluetoothDisconnected => '蓝牙已断开';
+
+  @override
+  String get gattUuidPlaceholder => '请输入一个或多个 UUID，使用逗号或换行分隔';
+
+  @override
+  String get gattServiceUuid => 'GATT Service UUID';
+
+  @override
+  String get gattUuidTips => '示例: 180A, 0000180D-0000-1000-8000-00805F9B34FB';
+
+  @override
+  String get gattUuidErrorEmpty => '请输入至少一个 UUID';
+
+  @override
+  String get gattUuidErrorInvalidFmt => '以下 UUID 格式无效:\n%s';
+
+  @override
+  String get customCommand => '自定义命令';
+
+  @override
+  String get sendCustomCmd => '发送自定义命令';
+
+  @override
+  String get receivedData => '接收的数据';
+
+  @override
+  String get inputData => '输入的数据';
 }

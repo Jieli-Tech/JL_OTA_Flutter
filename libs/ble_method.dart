@@ -107,11 +107,11 @@ class BleMethod {
     }
   }
 
-  // 读取当前是否使用BLE通讯
-  static Future<bool> isBleWay() async {
+  // 读取当前使用的通讯方式
+  static Future<int> getConnectWay() async {
     try {
       return await _methodChannel.invokeMethod(
-            BleMethodConstants.METHOD_IS_BLE_WAY,
+            BleMethodConstants.METHOD_GET_CONNECT_WAY,
           ) ??
           true;
     } on PlatformException catch (e) {
@@ -120,11 +120,11 @@ class BleMethod {
     }
   }
 
-  // 设置是否使用BLE通讯
-  static Future<void> setBleWay(bool isBle) async {
+  // 设置当前使用的通讯方式
+  static Future<void> setConnectWay(int connectWay) async {
     try {
-      await _methodChannel.invokeMethod(BleMethodConstants.METHOD_SET_BLE_WAY, {
-        BleMethodConstants.ARG_IS_BLE: isBle,
+      await _methodChannel.invokeMethod(BleMethodConstants.METHOD_SET_CONNECT_WAY, {
+        BleMethodConstants.ARG_CONNECT_WAY: connectWay,
       });
     } on PlatformException catch (e) {
       print("Failed to set BLE way: ${e.message}");
@@ -154,6 +154,58 @@ class BleMethod {
       );
     } on PlatformException catch (e) {
       print("Failed to use sdk bluetooth: ${e.message}");
+      rethrow;
+    }
+  }
+
+  // 读取是否使用GattOverEdr
+  static Future<bool> isUseGattOverEdr() async {
+    try {
+      return await _methodChannel.invokeMethod(
+        BleMethodConstants.METHOD_IS_USING_GATT_OVER_EDR,
+      ) ??
+          true;
+    } on PlatformException catch (e) {
+      print("Failed to check if sdk bluetooth is used: ${e.message}");
+      rethrow;
+    }
+  }
+
+  // 设置是否使用Gatt Over edr
+  static Future<void> setGattOverEdrState(bool gattOverEdrState) async {
+    try {
+      await _methodChannel.invokeMethod(
+        BleMethodConstants.METHOD_SET_GATT_OVER_EDR,
+        {BleMethodConstants.ARG_IS_USING_GATT_OVER_EDR: gattOverEdrState},
+      );
+    } on PlatformException catch (e) {
+      print("Failed to set gatt over edr: ${e.message}");
+      rethrow;
+    }
+  }
+
+  // 读取Gatt Service Uuids
+  static Future<List<String>> getGattServiceUuids() async {
+    try {
+      final result = await _methodChannel.invokeMethod(
+        BleMethodConstants.METHOD_GET_GATT_SERVICE_UUIDS,
+      );
+      return List<String>.from(result ?? []);
+    } on PlatformException catch (e) {
+      print("Failed to get gatt service uuids: ${e.message}");
+      return [];
+    }
+  }
+
+  // 设置Gatt Service uuids
+  static Future<void> setGattServiceUuids(List<String> uuids) async {
+    try {
+      await _methodChannel.invokeMethod(
+        BleMethodConstants.METHOD_SET_GATT_SERVICE_UUIDS,
+        {BleMethodConstants.ARG_GATT_SERVICE_UUIDS: uuids},
+      );
+    } on PlatformException catch (e) {
+      print("Failed to set gatt servie uuids: ${e.message}");
       rethrow;
     }
   }
@@ -479,6 +531,19 @@ class BleMethod {
       );
     } on PlatformException catch (e) {
       print("Failed to pop all activities: ${e.message}");
+      rethrow;
+    }
+  }
+
+  // 发送自定义命令
+  static Future<void> sendCustomCommand(Uint8List data) async {
+    try {
+      await _methodChannel.invokeMethod(
+        BleMethodConstants.METHOD_SEND_CUSTOM_COMMAND,
+        {BleMethodConstants.ARG_CUSTOM_DATA: data},
+      );
+    } on PlatformException catch (e) {
+      print("Failed to send custom command: ${e.message}");
       rethrow;
     }
   }

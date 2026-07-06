@@ -57,6 +57,7 @@
 "result_status_is_updating" = "Device is already being upgraded...";
 "result_fail_same_sn" = "Same SN";
 "result_cancel" = "User canceled";
+"result_reconnect_update_source" = "User reconnect";
 "unknown_type" = "Unknown Type";
 "ble_not_open" = "Bluetooth not ready";
 "need_upgrade_now" = "The device needs to be forced updated";

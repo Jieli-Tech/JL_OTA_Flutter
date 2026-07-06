@@ -10,6 +10,7 @@ import com.jieli.otasdk.MyApplication
 import com.jieli.otasdk.R
 import com.jieli.otasdk.tool.bluetooth.BluetoothHelper
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * Des:
@@ -19,11 +20,10 @@ import java.io.File
  * Modify date: 2025/07/29
  * Modified by:
  */
-class MainViewModel : ViewModel() {
+class MainViewModel private constructor() : ViewModel() {
 
-    fun destroy() {
-        BluetoothHelper.getInstance().destroy()
-    }
+    private var isCleaned = false
+    private var webServiceContextRef: WeakReference<Context>? = null
 
     companion object {
         @Volatile
@@ -46,50 +46,93 @@ class MainViewModel : ViewModel() {
         }
 
         fun startWebService(context: Context) {
+            val instance = getInstance()
+            if (instance.isCleaned) return
+
             try {
-                // 开启传文件服务
+                // Use application context to prevent memory leaks
+                val appContext = context.applicationContext
+
+                // Store weak reference to context for cleanup
+                instance.webServiceContextRef = WeakReference(appContext)
+
+                // Start file transfer service
                 val folderList = ArrayList<TransferFolder>()
-                folderList.add(TransferFolder().run {
-                    this.id = FOLDER_ID_OTA
-                    this.folder = File(MyApplication.getInstance().otaFileDir)
-                    this.describe = context.getString(R.string.update_file)
-                    this.fileType = FOLDER_FILE_TYPE_UFW
-                    this.callback = object : TransferFolderCallback {
-                        override fun onCreateFile(file: File?): Boolean {
-                            return true
-                        }
 
-                        override fun onDeleteFile(file: File?): Boolean {
-                            return file?.delete() == true
-                        }
-                    }
-                    this
+                // OTA folder configuration
+                folderList.add(TransferFolder().apply {
+                    id = FOLDER_ID_OTA
+                    folder = File(MyApplication.getInstance().otaFileDir)
+                    describe = appContext.getString(R.string.update_file)
+                    fileType = FOLDER_FILE_TYPE_UFW
+                    callback = createTransferFolderCallback()
                 })
-                folderList.add(TransferFolder().run {
-                    this.id = FOLDER_ID_LOG
-                    this.folder = File(MyApplication.getInstance().logFileDir)
-                    this.describe = context.getString(R.string.log_file)
-                    this.fileType = FOLDER_FILE_TYPE_TXT
-                    this.callback = object : TransferFolderCallback {
-                        override fun onCreateFile(file: File?): Boolean {
-                            return true
-                        }
 
-                        override fun onDeleteFile(file: File?): Boolean {
-                            return file?.delete() == true
-                        }
-                    }
-                    this
+                // Log folder configuration
+                folderList.add(TransferFolder().apply {
+                    id = FOLDER_ID_LOG
+                    folder = File(MyApplication.getInstance().logFileDir)
+                    describe = appContext.getString(R.string.log_file)
+                    fileType = FOLDER_FILE_TYPE_TXT
+                    callback = createTransferFolderCallback()
                 })
+
                 WebService.setTransferFolderList(folderList)
-                WebService.start(context)
+                WebService.start(appContext)
             } catch (e: Exception) {
-                e.printStackTrace() // 打印异常信息
+                e.printStackTrace()
             }
         }
 
         fun stopWebService(context: Context) {
-            context.stopService(Intent(context, WebService::class.java))
+            try {
+                val appContext = context.applicationContext
+                appContext.stopService(Intent(appContext, WebService::class.java))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+
+        /**
+         * Create TransferFolderCallback without holding external references
+         * Uses a static inner class to avoid memory leaks
+         */
+        private fun createTransferFolderCallback(): TransferFolderCallback {
+            return TransferFolderCallbackImpl()
+        }
+
+        /**
+         * Static inner class implementation to prevent memory leaks
+         * Does not hold reference to MainViewModel
+         */
+        private class TransferFolderCallbackImpl : TransferFolderCallback {
+            @Deprecated("Deprecated in Java")
+            override fun onCreateFile(file: File?): Boolean {
+                return true
+            }
+
+            override fun onDeleteFile(file: File?): Boolean {
+                return file?.delete() == true
+            }
+        }
+    }
+
+    /**
+     * Check if the ViewModel has been cleaned up
+     */
+    fun isCleaned(): Boolean = isCleaned
+
+    fun destroy() {
+        if (isCleaned) return
+        isCleaned = true
+
+        // Stop web service
+        webServiceContextRef?.get()?.let { context ->
+            stopWebService(context)
+        }
+        webServiceContextRef = null
+
+        // Destroy BluetoothHelper
+        BluetoothHelper.getInstance().destroy()
     }
 }

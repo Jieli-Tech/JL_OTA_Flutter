@@ -16,12 +16,6 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9FC8234BE087A1BD87F98567 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E793A766A6590EFD098A1C2 /* Pods_RunnerTests.framework */; };
-		C27F36D62E97D2E000A1E337 /* JL_BLEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36D02E97D2E000A1E337 /* JL_BLEKit.framework */; };
-		C27F36D82E97D2E000A1E337 /* JL_HashPair.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36D12E97D2E000A1E337 /* JL_HashPair.framework */; };
-		C27F36DA2E97D2E000A1E337 /* JL_AdvParse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36D22E97D2E000A1E337 /* JL_AdvParse.framework */; };
-		C27F36DC2E97D2E000A1E337 /* JL_OTALib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36D32E97D2E000A1E337 /* JL_OTALib.framework */; };
-		C27F36DE2E97D2E000A1E337 /* JLLogHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36D42E97D2E000A1E337 /* JLLogHelper.framework */; };
-		C27F36E02E97D2E000A1E337 /* DFUnits.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36D52E97D2E000A1E337 /* DFUnits.framework */; };
 		C297928A2E7CF1BE009542FC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C29792892E7CF1BE009542FC /* InfoPlist.strings */; };
 		C2D6A5842E7E57A400007B7F /* GCDWebUploader.bundle in Resources */ = {isa = PBXBuildFile; fileRef = C2D6A57A2E7E57A400007B7F /* GCDWebUploader.bundle */; };
 		C2D6A5852E7E57A400007B7F /* GCDWebServerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = C2D6A55A2E7E57A400007B7F /* GCDWebServerConnection.m */; };
@@ -42,6 +36,12 @@
 		C2D6A5942E7E57A400007B7F /* GCDWebUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = C2D6A57C2E7E57A400007B7F /* GCDWebUploader.m */; };
 		C2D6A5952E7E57A400007B7F /* GCDWebServerFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = C2D6A5672E7E57A400007B7F /* GCDWebServerFileRequest.m */; };
 		C2D6A59A2E7E57BE00007B7F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C2D6A5992E7E57BE00007B7F /* Localizable.strings */; };
+		C2DEA4102FB5FC8400D61D82 /* JL_AdvParse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36A82E97CEDD00A1E337 /* JL_AdvParse.framework */; };
+		C2DEA4132FB5FCAD00D61D82 /* JL_HashPair.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36AC2E97CEDD00A1E337 /* JL_HashPair.framework */; };
+		C2DEA4152FB5FCAF00D61D82 /* JL_BLEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36A92E97CEDD00A1E337 /* JL_BLEKit.framework */; };
+		C2DEA4172FB5FCB100D61D82 /* JL_OTALib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36AA2E97CEDD00A1E337 /* JL_OTALib.framework */; };
+		C2DEA4192FB5FCB200D61D82 /* JLLogHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36A72E97CEDD00A1E337 /* JLLogHelper.framework */; };
+		C2DEA41B2FB5FCB500D61D82 /* DFUnits.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C27F36AB2E97CEDD00A1E337 /* DFUnits.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,12 +77,17 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A012C0C3C32E83BBD4326503 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
-		C27F36D02E97D2E000A1E337 /* JL_BLEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_BLEKit.framework; sourceTree = "<group>"; };
-		C27F36D12E97D2E000A1E337 /* JL_HashPair.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_HashPair.framework; sourceTree = "<group>"; };
-		C27F36D22E97D2E000A1E337 /* JL_AdvParse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_AdvParse.framework; sourceTree = "<group>"; };
-		C27F36D32E97D2E000A1E337 /* JL_OTALib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_OTALib.framework; sourceTree = "<group>"; };
-		C27F36D42E97D2E000A1E337 /* JLLogHelper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JLLogHelper.framework; sourceTree = "<group>"; };
-		C27F36D52E97D2E000A1E337 /* DFUnits.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DFUnits.framework; sourceTree = "<group>"; };
+		C27F36A72E97CEDD00A1E337 /* JLLogHelper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JLLogHelper.framework; sourceTree = "<group>"; };
+		C27F36A82E97CEDD00A1E337 /* JL_AdvParse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_AdvParse.framework; sourceTree = "<group>"; };
+		C27F36A92E97CEDD00A1E337 /* JL_BLEKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_BLEKit.framework; sourceTree = "<group>"; };
+		C27F36AA2E97CEDD00A1E337 /* JL_OTALib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_OTALib.framework; sourceTree = "<group>"; };
+		C27F36AB2E97CEDD00A1E337 /* DFUnits.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DFUnits.framework; sourceTree = "<group>"; };
+		C27F36AC2E97CEDD00A1E337 /* JL_HashPair.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = JL_HashPair.framework; sourceTree = "<group>"; };
+		C27F36B92E97CEF200A1E337 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		C27F36BB2E97CF0500A1E337 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		C27F36BD2E97CF1300A1E337 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		C27F36BF2E97CF2100A1E337 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		C27F36C12E97CF2700A1E337 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C29792862E7CF1BE009542FC /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C29792872E7CF1BE009542FC /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		C29792882E7CF1BE009542FC /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -142,13 +147,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C27F36DC2E97D2E000A1E337 /* JL_OTALib.framework in Frameworks */,
-				C27F36DA2E97D2E000A1E337 /* JL_AdvParse.framework in Frameworks */,
-				C27F36D82E97D2E000A1E337 /* JL_HashPair.framework in Frameworks */,
-				C27F36DE2E97D2E000A1E337 /* JLLogHelper.framework in Frameworks */,
 				1457224F4722F3787F5FCB61 /* Pods_Runner.framework in Frameworks */,
-				C27F36E02E97D2E000A1E337 /* DFUnits.framework in Frameworks */,
-				C27F36D62E97D2E000A1E337 /* JL_BLEKit.framework in Frameworks */,
+				C2DEA4192FB5FCB200D61D82 /* JLLogHelper.framework in Frameworks */,
+				C2DEA4152FB5FCAF00D61D82 /* JL_BLEKit.framework in Frameworks */,
+				C2DEA4172FB5FCB100D61D82 /* JL_OTALib.framework in Frameworks */,
+				C2DEA4132FB5FCAD00D61D82 /* JL_HashPair.framework in Frameworks */,
+				C2DEA41B2FB5FCB500D61D82 /* DFUnits.framework in Frameworks */,
+				C2DEA4102FB5FC8400D61D82 /* JL_AdvParse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,12 +342,17 @@
 		D95EE6EB592EC6D384BE27E4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C27F36D52E97D2E000A1E337 /* DFUnits.framework */,
-				C27F36D22E97D2E000A1E337 /* JL_AdvParse.framework */,
-				C27F36D02E97D2E000A1E337 /* JL_BLEKit.framework */,
-				C27F36D12E97D2E000A1E337 /* JL_HashPair.framework */,
-				C27F36D32E97D2E000A1E337 /* JL_OTALib.framework */,
-				C27F36D42E97D2E000A1E337 /* JLLogHelper.framework */,
+				C27F36C12E97CF2700A1E337 /* SystemConfiguration.framework */,
+				C27F36BF2E97CF2100A1E337 /* Security.framework */,
+				C27F36BD2E97CF1300A1E337 /* libz.tbd */,
+				C27F36BB2E97CF0500A1E337 /* libxml2.tbd */,
+				C27F36B92E97CEF200A1E337 /* libc++.tbd */,
+				C27F36AB2E97CEDD00A1E337 /* DFUnits.framework */,
+				C27F36A82E97CEDD00A1E337 /* JL_AdvParse.framework */,
+				C27F36A92E97CEDD00A1E337 /* JL_BLEKit.framework */,
+				C27F36AC2E97CEDD00A1E337 /* JL_HashPair.framework */,
+				C27F36AA2E97CEDD00A1E337 /* JL_OTALib.framework */,
+				C27F36A72E97CEDD00A1E337 /* JLLogHelper.framework */,
 				0A70485DA236343E837DB774 /* Pods_Runner.framework */,
 				2E793A766A6590EFD098A1C2 /* Pods_RunnerTests.framework */,
 			);
@@ -725,7 +735,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.JLBLE.OtaUpdate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -919,7 +929,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.JLBLE.OtaUpdate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -952,7 +962,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.JLBLE.OtaUpdate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

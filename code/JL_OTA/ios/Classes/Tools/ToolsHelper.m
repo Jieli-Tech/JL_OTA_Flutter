@@ -7,6 +7,7 @@
 //
 
 #import "ToolsHelper.h"
+#import "JL_RunSDK.h"
 
 @interface ToolsHelper()
 
@@ -133,6 +134,37 @@
 }
 
 
++(BOOL)isGattOverEdr{
+    if([DFTools getUserByKey:@"GattOverEdr"]){
+        return [[DFTools getUserByKey:@"GattOverEdr"] boolValue];
+    }else{
+        [self setGattOverEdr:NO];
+        return NO;
+    }
+}
+
++(void)setGattOverEdr:(BOOL)status{
+    [DFTools setUser:[NSNumber numberWithBool:status] forKey:@"GattOverEdr"];
+}
+
+
+/// 设置GATT服务UUIDs
+/// - Parameter uuids: UUIDs
++(void)setGattServiceUUIDs:(NSArray *)uuids {
+    [DFTools setUser:uuids forKey:@"GattServiceUUIDs"];
+}
+
+
+/// 获取GATT服务UUIDs
++(NSArray *_Nullable)getGattServiceUUIDs {
+    if([DFTools getUserByKey:@"GattServiceUUIDs"]){
+        return [[DFTools getUserByKey:@"GattServiceUUIDs"] mutableCopy];
+    }else{
+        return nil;
+    }
+}
+
+
 +(BOOL)isAutoTestOta{
     if([DFTools getUserByKey:@"AutoTestOta"]){
         return [[DFTools getUserByKey:@"AutoTestOta"] boolValue];
@@ -186,14 +218,6 @@
 +(void)setFaultTolerantTimes:(NSInteger)number{
     [DFTools setUser:[NSNumber numberWithInt:(int)number] forKey:@"fault_tolerant_times"];
 }
-
-
-
-
-
-
-
-
 
 +(NSString *)errorReason:(JL_OTAResult)result{
     switch (result) {
@@ -289,6 +313,9 @@
             break;
         case JL_OTAResultCancel:
             return kJL_TXT("result_cancel");
+            break;
+        case JL_OTAResultReconnectUpdateSource:
+            return kJL_TXT("result_reconnect_update_source");
             break;
     }
     return @"";

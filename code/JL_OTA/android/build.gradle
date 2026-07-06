@@ -2,6 +2,7 @@ group = "com.jieli.otasdk"
 version = "1.0-SNAPSHOT"
 
 buildscript {
+   // ext.kotlin_version = "2.1.0"
     ext.kotlin_version = '1.6.20'
     repositories {
         google()
@@ -11,12 +12,32 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/central' }
     }
 
+//    dependencies {
+//        classpath("com.android.tools.build:gradle:8.7.3")
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+//    }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
+//allprojects {
+//    repositories {
+//        google()
+//        jcenter()
+//        mavenCentral()
+//        maven { url 'https://maven.aliyun.com/repository/google' }
+//        maven { url 'https://maven.aliyun.com/repository/central' }
+//        maven { url 'https://jitpack.io' }
+//        flatDir {
+//            dirs "$project(':jl_ota').projectDir/libs"
+//        }
+//        flatDir {
+//            dirs("libs")
+//        }
+//    }
+//}
 rootProject.allprojects {
     repositories {
         google()
@@ -26,6 +47,10 @@ rootProject.allprojects {
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://jitpack.io' }
+//        maven {
+//            url 'http://download.flutter.io'
+//            allowInsecureProtocol = true
+//        }
         flatDir {
             dirs project(':jl_ota').file('libs')
         }
@@ -84,11 +109,14 @@ android {
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
 
+        //implementation(fileTree(dir: 'libs', include: ['*.aar']))
+        // Flutter相关依赖
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-        implementation(name:'jl-component-lib_V1.2.2-release', ext:'aar')
-        implementation(name:'jl_bt_ota_V1.10.0_10931-release', ext:'aar')
+        implementation(name:'jl-component-lib_V1.4.0_10400-release', ext:'aar')
+        implementation(name:'jl_bt_ota_V1.11.0_11015-release', ext:'aar')
         implementation(name:'jl_file_transfer_V1.0.0-release', ext:'aar')
 
+        // 添加您提供的依赖
         implementation "com.github.permissions-dispatcher:permissionsdispatcher:4.9.2"
         kapt "com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.2"
 

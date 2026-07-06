@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
   s.name             = 'jl_ota'
-  s.version          = '0.0.1'
-  s.summary          = 'A Flutter plugin for Jielong OTA (Over-The-Air) updates.'
+  s.version          = '1.0.0'
+  s.summary          = 'A Flutter plugin for Jieli OTA (Over-The-Air) updates.'
   s.description      = <<-DESC
-This plugin provides the functionality to perform OTA firmware updates on Jielong devices from within a Flutter application.
+This plugin provides the functionality to perform OTA firmware updates on Jieli devices from within a Flutter application.
                        DESC
   s.homepage         = 'http://yourcompany.com' # 替换为你的实际网站
   s.license          = { :type => 'MIT', :file => '../LICENSE' } # 添加许可证类型

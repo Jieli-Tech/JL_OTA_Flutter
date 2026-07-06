@@ -1,8 +1,8 @@
 {
   "name": "jl_ota",
-  "version": "0.0.1",
-  "summary": "A Flutter plugin for Jielong OTA (Over-The-Air) updates.",
-  "description": "This plugin provides the functionality to perform OTA firmware updates on Jielong devices from within a Flutter application.",
+  "version": "1.0.0",
+  "summary": "A Flutter plugin for Jieli OTA (Over-The-Air) updates.",
+  "description": "This plugin provides the functionality to perform OTA firmware updates on Jieli devices from within a Flutter application.",
   "homepage": "http://yourcompany.com",
   "license": {
     "type": "MIT",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/your_username/your_repo.git",
-    "tag": "0.0.1"
+    "tag": "1.0.0"
   },
   "source_files": "Classes/**/*",
   "dependencies": {

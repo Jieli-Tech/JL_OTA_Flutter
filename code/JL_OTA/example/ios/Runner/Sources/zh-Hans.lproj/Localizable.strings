@@ -57,6 +57,7 @@
 "result_status_is_updating" = "设备已经在升级了...";
 "result_fail_same_sn" = "相同的SN";
 "result_cancel" = "用户取消";
+"result_reconnect_update_source" = "用户重连";
 "unknown_type" = "不可知类型";
 "ble_not_open" = "蓝牙未打开";
 "need_upgrade_now" = "设备需要强制升级";

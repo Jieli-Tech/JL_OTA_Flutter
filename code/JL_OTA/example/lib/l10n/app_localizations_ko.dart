@@ -47,8 +47,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pleaseSetFilter => '필터를 설정해 주세요';
 
   @override
-  String get copyRight =>
-      '©2021–2025 Zhuhai Jieli Technology co., LTD 모든 권리 보유';
+  String get copyRight => '©2021–2025 Zhuhai Jieli Technology co., LTD 모든 권리 보유';
 
   @override
   String get companyName => '주해 제리 기술 유한회사';
@@ -57,8 +56,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get privacyPolicyDialogTitle => '이용약관 및 개인정보 처리방침';
 
   @override
-  String get welcomeMessage =>
-      '　Jieli OTA 업데이트에 오신 것을 환영합니다!\n　저희는 귀하의 개인정보 보호를 매우 중요하게 생각합니다. \"Jieli OTA 업데이트\" 서비스를 사용하기 전에 반드시';
+  String get welcomeMessage => '　Jieli OTA 업데이트에 오신 것을 환영합니다!\n　저희는 귀하의 개인정보 보호를 매우 중요하게 생각합니다. \"Jieli OTA 업데이트\" 서비스를 사용하기 전에 반드시';
 
   @override
   String get userAgreement => '《이용 약관》';
@@ -70,8 +68,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get privacyPolicy => '《개인정보 처리방침》';
 
   @override
-  String get agreementText =>
-      '을(를) 주의 깊게 읽어보시기 바랍니다.\n　본 안내 및 관련 약관 내용에 동의하시면 \'동의\'를 클릭하여 서비스를 시작하세요.';
+  String get agreementText => '을(를) 주의 깊게 읽어보시기 바랍니다.\n　본 안내 및 관련 약관 내용에 동의하시면 \'동의\'를 클릭하여 서비스를 시작하세요.';
 
   @override
   String get agreeButton => '동의';
@@ -105,6 +102,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get communicationWaySpp => 'SPP';
+
+  @override
+  String get communicationWayGatt => 'GATT Over BR/EDR';
 
   @override
   String get adjustMtu => 'MTU 조정';
@@ -185,8 +185,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get serviceStarted => '서비스가 시작되었습니다';
 
   @override
-  String get ensureConnection =>
-      '연결 장치가 동일한 Wi-Fi에 연결되어 있거나 이 장치의 핫스팟에 연결되어 있는지 확인하세요';
+  String get ensureConnection => '연결 장치가 동일한 Wi-Fi에 연결되어 있거나 이 장치의 핫스팟에 연결되어 있는지 확인하세요';
 
   @override
   String get copySuccess => '복사 성공, 연결된 장치의 브라우저에서 열어주세요';
@@ -261,8 +260,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get systemSetCamera => '이 기능은 카메라 사용이 필요합니다. 시스템 설정에서 권한을 부여해 주세요';
 
   @override
-  String get systemSetExternalStorage =>
-      '이 기능은 휴대폰 저장공간 사용이 필요합니다. 시스템 설정에서 권한을 부여해 주세요';
+  String get systemSetExternalStorage => '이 기능은 휴대폰 저장공간 사용이 필요합니다. 시스템 설정에서 권한을 부여해 주세요';
 
   @override
   String get downloadSavePending => '파일 저장 중. 잠시만 기다려 주세요…';
@@ -292,9 +290,38 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shareUfwFile => 'ufw 파일 공유';
 
   @override
-  String get shareUfwFileTips =>
-      '제3자 앱(WeChat/DingTalk)에서 \'다른 앱으로 열기\'를 통해 ufw 파일을 열고 현재 OTA 업그레이드로 공유합니다';
+  String get shareUfwFileTips => '제3자 앱(WeChat/DingTalk)에서 \'다른 앱으로 열기\'를 통해 ufw 파일을 열고 현재 OTA 업그레이드로 공유합니다';
 
   @override
   String get deviceMustMandatoryUpgrade => '디바이스 강제 업그레이드 필요';
+
+  @override
+  String get bluetoothDisconnected => '블루투스 연결이 끊어졌습니다';
+
+  @override
+  String get gattUuidPlaceholder => '하나 이상의 UUID를 입력하세요. 쉼표나 줄바꿈으로 구분하세요';
+
+  @override
+  String get gattServiceUuid => 'GATT 서비스 UUID';
+
+  @override
+  String get gattUuidTips => '예시: 180A, 0000180D-0000-1000-8000-00805F9B34FB';
+
+  @override
+  String get gattUuidErrorEmpty => '하나 이상의 UUID를 입력하세요';
+
+  @override
+  String get gattUuidErrorInvalidFmt => '잘못된 UUID 형식:\n%s';
+
+  @override
+  String get customCommand => '사용자 지정 명령';
+
+  @override
+  String get sendCustomCmd => '사용자 지정 명령 보내기';
+
+  @override
+  String get receivedData => '수신된 데이터';
+
+  @override
+  String get inputData => '입력된 데이터';
 }
